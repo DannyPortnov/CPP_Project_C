@@ -1,5 +1,5 @@
-#ifndef _QUEUE_H_
-#define _QUEUE_H_
+#ifndef _PRIORITY_QUEUE_H_
+#define _PRIORITY_QUEUE_H_
 
 #define MIN_SERVICE_TIME 50
 #define MAX_SERVICE_TIME 69
@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdbool.h>
 #include <string>
-#include <random>
+#include "PQ_Item.h"
 using namespace std;
 
 #ifdef _DEBUG
@@ -21,82 +21,95 @@ using namespace std;
 
 template <class T>
 class PriorityQueue {
-private:
-	T* m_queue;	//queue array pointer
-	T* m_head;
-	T* m_tail;
-	const unsigned m_priority;
-	unsigned m_size = 0; // number of variables in queue
-	void increment_pointer(T*& pointer) {
-		if (pointer == &m_queue[m_capacity - 1]) {
-			pointer = &m_queue[0];
-		}
-		else {
-			pointer++;
-		}
-	}
-public:
-	PriorityQueue::PriorityQueue(int capacity)
-		:m_capacity(capacity), m_head(nullptr)
-	{
-		initialize_queue();
-	}
-	PriorityQueue(const PriorityQueue&) {
-		m_queue = new char[m_capacity];
-		m_tail = &m_queue[0];
-		return *this;
-	}
-	~PriorityQueue() {// deconstructor
-		delete[] m_queue;
-	}		
-	void push(const T new_client) {
-		if (!is_queue_full()) {
-			*m_tail = new_client;
-			increment_pointer(m_tail);
-			m_variables_count++;
-		}
-		else {
-			return;
-		}
-		if (is_queue_empty()) { //checks if m_head is nullptr, not really empty because a client was pushed.
-			if (m_tail == &m_queue[0]) {
-				m_head = &m_queue[m_capacity - 1];
+	private:
+		PQ_Item<T>** m_queue;	//queue array pointer
+		PQ_Item<T>* m_head;
+		PQ_Item<T>* m_tail;
+		int m_size = 0; // number of variables in queue
+		void increment_pointer(PQ_Item<T>*& pointer) {
+
+			if (pointer == m_queue[m_size - 1]) {
+				pointer = m_queue[0];
 			}
 			else {
-				m_head = (m_tail - 1);
+				pointer++;
 			}
 		}
-	}
-	const bool pop() {
-		if (is_queue_empty()) {
-			return false;
+
+	public:
+		void push(const PQ_Item<T> new_item) {
+			if (!is_queue_full()) {
+				int i = 0;
+				for (; i < m_size; i++)
+				{
+					PQ_Item<T>* test = m_queue[i]; //compilter doesn't handle autocompletes appropriately!
+					if (test->get_priority ) {
+					}
+				}
+				*m_tail = new_item;
+				increment_pointer(m_tail);
+			}
+			else {
+				return;
+			}
+			//if (is_queue_empty()) { //checks if m_head is nullptr, not really empty because a client was pushed.
+			//	if (m_tail == &m_queue[0]) {
+			//		m_head = &m_queue[m_size - 1];
+			//	}
+			//	else {
+			//		m_head = (m_tail - 1);
+			//	}
+			//}
 		}
-		*m_head = NULL; //remove client
-		increment_pointer(m_head);
-		if (m_tail == m_head) {
-			m_head = nullptr;
+
+		PriorityQueue(int size)
+			:m_size(size), m_head(nullptr)
+		{
+			initialize_queue();
 		}
-		m_size--;
+		PriorityQueue& initialize_queue() {
+			m_queue = new PQ_Item<T>*[m_size];
+			m_tail = m_queue[0];
+			return *this;
+		}
+		//PriorityQueue(const PriorityQueue<T>&) {
+		//	m_queue = new PQ_Item<T>*[m_size];
+		//	m_tail = m_queue[0];
+		//	return *this;
+		//}
+		//~PriorityQueue() {// deconstructor
+		//	delete[] m_queue;
+		//}		
+		PQ_Item<T>** get_queue() { return m_queue; }
+		const bool pop() {
+			
+			if (is_queue_empty()) {
+				return false;
+			}
+			*m_head = NULL; //remove client
+			increment_pointer(m_head);
+			if (m_tail == m_head) {
+				m_head = nullptr;
+			}
+			m_size--;
+			return true;
+		}
+		const bool is_queue_full()  const {
+			return m_tail == m_head;
+		}
 
-		return true;
-	}
-	const bool is_queue_full()  const {
-		return m_tail == m_head;
-	}
+		const bool is_queue_empty()  const {
+			return m_head == nullptr;
+		}
+		const char front() const {
+			if (!is_queue_empty())
+				return *m_head;
+			cout << "The Queue Is Empty!" << endl;
+		}
 
-	const bool is_queue_empty()  const {
-		return m_head == nullptr;
-	}
-	const char front() const {
-		if (!is_queue_empty())
-			return *m_head;
-		cout << "The Queue Is Empty!" << endl;
-	}
-
-	const int size() const {
-		return m_size;
-	}
+		const int size() const {
+			return m_size;
+		}
 };
 
-
-#endif		// _QUEUE_H_
+#endif		// _PRIORITY_QUEUE_H_
