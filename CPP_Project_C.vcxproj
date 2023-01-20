@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="main.h" />
     <ClInclude Include="PQ_Item.h" />
     <ClInclude Include="PriorityQueue.h" />
   </ItemGroup>
