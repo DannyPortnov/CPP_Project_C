@@ -16,9 +16,11 @@ private:
 public:
 	PQ_Item(int priority, T value)
 		:m_priority(priority), m_value(value){}
+
 	int get_priority() { return m_priority; }
 	T get_value() { return m_value; }
-
+	void set_value(T value) { m_value = value; }
+	void set_priority(int priority) { m_priority = priority; }
 };
 
 
