@@ -1,3 +1,3 @@
 #pragma once
 
-void resizing_then_removing();
+void removing_at_max_capacity();

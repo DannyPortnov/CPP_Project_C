@@ -18,6 +18,15 @@ void resizing_then_removing()
     intQueue.insert(5, 2);
     intQueue.insert(1, 3);
     intQueue.insert(1, 0);
+    int highestPriority = intQueue.remove(); // returns 1
+}
+
+void removing_at_max_capacity()
+{
+    PriorityQueue<int> intQueue;
+    intQueue.insert(3, 1);
+    intQueue.insert(5, 2);
+    intQueue.insert(1, 3);
     //for (int i = 0; i < 1; i++)
     //{
     //    intQueue.insert(i, i);
@@ -42,7 +51,8 @@ void resizing_then_removing()
 }
 
 int main() {
-    resizing_then_removing();
+    resizing_then_removing(); //works
+    removing_at_max_capacity(); //works
     cout << "Memory Leaks: " << _CrtDumpMemoryLeaks() << endl;
     return 0;
 }
