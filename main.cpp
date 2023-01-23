@@ -13,11 +13,18 @@ public:
     int getAge() { return age; }
 };
 
-void simple_test() {
+void queue_of_ints() {
     PriorityQueue<int> intQueue;
     PriorityQueue<int> intQueue2;
     intQueue.insert(3, 1);
     PriorityQueue<int> arrayOfQueues[2] = { intQueue, intQueue2 };
+}
+
+void queue_of_strings() {
+    PriorityQueue<string> stringQueue;
+    PriorityQueue<string> stringQueue2;
+    stringQueue.insert("Danny", 1);
+    PriorityQueue<string> arrayOfQueues[2] = { stringQueue, stringQueue2 };
 }
 
 void resizing_then_removing()
@@ -100,7 +107,8 @@ int main() {
     removing_then_resizing();//works
     removing_at_max_capacity(); //works
     resizing_only();//works
-    simple_test();//works
+    queue_of_ints();//works
+    queue_of_strings();
 
     test_pass_ref();
 
