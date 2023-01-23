@@ -49,6 +49,37 @@ void resizing_only()
     intQueue.insert(1, 3);
     intQueue.insert(1, 0);
 }
+void pass_by_ref(PriorityQueue<int>& intQueue)
+{
+    intQueue.insert(3, 1);
+    intQueue.insert(5, 2);
+    intQueue.insert(1, 3);
+    intQueue.insert(1, 0);
+}
+
+void test_pass_ref() {
+    PriorityQueue<int> intQueue;
+    pass_by_ref(intQueue);
+    int highestPriority = intQueue.remove(); // returns 1
+}
+
+const PriorityQueue<int>& return_ref()
+{
+    PriorityQueue<int> intQueue;
+
+    intQueue.insert(3, 1);
+    intQueue.insert(5, 2);
+    intQueue.insert(1, 3);
+    intQueue.insert(1, 0);
+    return intQueue;
+}
+
+
+void test_return_ref() {
+    PriorityQueue<int> queue (return_ref());
+    //auto size = queue.get_size(); // returns 4
+}
+
 
 void removing_at_max_capacity()
 {
@@ -85,6 +116,10 @@ int main() {
     removing_at_max_capacity(); //works
     resizing_only();//works
     simple_test();//works
+
+    test_return_ref();
+    test_pass_ref();
+
     cout << "Memory Leaks: " << _CrtDumpMemoryLeaks() << endl;
     return 0;
 }

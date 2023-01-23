@@ -1,8 +1,6 @@
 #ifndef _PRIORITY_QUEUE_H_
 #define _PRIORITY_QUEUE_H_
 
-#define initial_capacity 0
-
 #define   _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
 #include <iostream>
@@ -35,16 +33,16 @@ public:
     PriorityQueue();
     PriorityQueue(const PriorityQueue<T>& other);
     ~PriorityQueue();
+    PriorityQueue<T>& get();
     void insert(T value, int priority);
     T remove();
-    int getSize();
-    void clear();
+    int get_size() const;
     PriorityQueue<T>& operator=(const PriorityQueue<T>& other);
     //T& operator[](int index);
 };
 
 template<class T>
-PriorityQueue<T>::PriorityQueue() : m_current_size(0), m_capacity(initial_capacity), m_queue(new PQ_Item<T>* [m_capacity]) {
+PriorityQueue<T>::PriorityQueue() : m_current_size(0), m_capacity(0), m_queue(new PQ_Item<T>* [m_capacity]) {
 }
 template<class T>
 PriorityQueue<T>::PriorityQueue(const PriorityQueue<T>& other) {
@@ -55,18 +53,14 @@ PriorityQueue<T>::PriorityQueue(const PriorityQueue<T>& other) {
         m_queue[i] = other.m_queue[i];
     }
 }
+template<class T>
+PriorityQueue<T>::~PriorityQueue() {}
+
+
 
 template<class T>
-PriorityQueue<T>::~PriorityQueue() {
-    //int amount_to_delete = m_current_size;
-    //if (was_resized) {
-    //    amount_to_delete+=2;
-    //}
-    for (int i = 0; i < allocations_counter; i++)
-    {
-        delete m_queue[i];
-    }
-    delete[] m_queue;
+PriorityQueue<T>& PriorityQueue<T>::get() {
+    return this;
 }
 
 template<class T>
@@ -104,16 +98,9 @@ T PriorityQueue<T>::remove() {
     return highestPriorityValue;
 }
 
-
-
 template<class T>
-int PriorityQueue<T>::getSize() {
+int PriorityQueue<T>::get_size() const {
     return m_current_size;
-}
-
-template<class T>
-void PriorityQueue<T>::clear() {
-    m_current_size = 0;
 }
 
 template<class T>
