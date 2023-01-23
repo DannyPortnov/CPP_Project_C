@@ -1,4 +1,5 @@
 #include <PriorityQueue.h>
+#include <Array.h>
 //#include "main.h"
 
 class CustomClass {
@@ -17,7 +18,6 @@ void simple_test() {
     PriorityQueue<int> intQueue2;
     intQueue.insert(3, 1);
     PriorityQueue<int> arrayOfQueues[2] = { intQueue, intQueue2 };
-    //PriorityQueue<int>* arrayOfQueues = 
 }
 
 void resizing_then_removing()
@@ -49,24 +49,8 @@ void resizing_only()
     intQueue.insert(1, 3);
     intQueue.insert(1, 0);
 }
-void pass_by_ref(PriorityQueue<int>& intQueue)
+PriorityQueue<int>& pass_by_ref(PriorityQueue<int>& intQueue)
 {
-    intQueue.insert(3, 1);
-    intQueue.insert(5, 2);
-    intQueue.insert(1, 3);
-    intQueue.insert(1, 0);
-}
-
-void test_pass_ref() {
-    PriorityQueue<int> intQueue;
-    pass_by_ref(intQueue);
-    int highestPriority = intQueue.remove(); // returns 1
-}
-
-const PriorityQueue<int>& return_ref()
-{
-    PriorityQueue<int> intQueue;
-
     intQueue.insert(3, 1);
     intQueue.insert(5, 2);
     intQueue.insert(1, 3);
@@ -74,12 +58,33 @@ const PriorityQueue<int>& return_ref()
     return intQueue;
 }
 
-
-void test_return_ref() {
-    PriorityQueue<int> queue (return_ref());
-    //auto size = queue.get_size(); // returns 4
+void test_pass_ref() {
+    PriorityQueue<int> intQueue;
+    auto queue_copy = pass_by_ref(intQueue);
+    queue_copy.insert(5, 30);
+    int highestPriority = intQueue.remove(); // returns 1
+    int highestPriorityOfCopy = queue_copy.remove(); // returns 5
 }
 
+void queue_of_Array() {
+    PriorityQueue<Array<int>> arrayQueue;
+    Array<int> array;
+    Array<int> array2;
+    array.fill_Array(4);
+    array2.fill_Array(6);
+    arrayQueue.insert(array, 1); //we need copy ctor
+    arrayQueue.insert(array2, 2);
+    auto top_array = arrayQueue.remove(); //should be array2
+}
+
+void Array_of_queses() {
+    Array <PriorityQueue<int>> queue_array;
+    queue_array[0].insert(3, 1); //we need copy ctor
+    queue_array[0].insert(5, 2); 
+    queue_array[1].insert(8, 1); //we need copy ctor
+    queue_array[2].insert(7, 2); 
+    //queue_array[1] = intQueue2;
+}
 
 void removing_at_max_capacity()
 {
@@ -87,27 +92,7 @@ void removing_at_max_capacity()
     intQueue.insert(3, 1);
     intQueue.insert(5, 2);
     intQueue.insert(1, 3);
-    //for (int i = 0; i < 1; i++)
-    //{
-    //    intQueue.insert(i, i);
-    //}
     int highestPriority = intQueue.remove(); // returns 1
-    //cout << "Highest priority int: " << highestPriority << endl;
-    //intQueue.insert(1, -1);
-
-    //PriorityQueue<string> stringQueue;
-    //stringQueue.insert("John", 10);
-    //stringQueue.insert("Jane", 7);
-    //stringQueue.insert("Bob", 15);
-    //string highestPriorityString = stringQueue.remove(); // returns "Bob"
-    //cout << "Highest priority string: " << highestPriorityString << endl;
-
-    //PriorityQueue<CustomClass> customQueue;
-    //customQueue.insert(CustomClass("John", 25), 10);
-    //customQueue.insert(CustomClass("Jane", 30), 7);
-    //customQueue.insert(CustomClass("Bob", 20), 15);
-    //CustomClass highestPriorityCustom = customQueue.remove(); // returns CustomClass("Bob", 20)
-    //cout << "Highest priority custom class: " << highestPriorityCustom.getName() << ", " << highestPriorityCustom.getAge() << endl;
 }
 
 int main() {
@@ -117,9 +102,10 @@ int main() {
     resizing_only();//works
     simple_test();//works
 
-    test_return_ref();
     test_pass_ref();
 
+    queue_of_Array();
+    Array_of_queses();
     cout << "Memory Leaks: " << _CrtDumpMemoryLeaks() << endl;
     return 0;
 }

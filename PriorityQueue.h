@@ -19,50 +19,45 @@ using namespace std;
 template<class T>
 class PriorityQueue {
 private:
-    //struct PQ_Item {
-    //    T m_value;
-    //    int m_priority;
-    //};
     int m_current_size;
     int m_capacity;
     PQ_Item<T>** m_queue;
-    int allocations_counter = 0;
+    int allocations_counter = 0; //counts number of dynamic 
     void prioritize_elements(int index);
     void resize();
 public:
     PriorityQueue();
     PriorityQueue(const PriorityQueue<T>& other);
     ~PriorityQueue();
-    PriorityQueue<T>& get();
+    //PriorityQueue<T>& get();
     void insert(T value, int priority);
     T remove();
     int get_size() const;
     PriorityQueue<T>& operator=(const PriorityQueue<T>& other);
-    //T& operator[](int index);
 };
 
 template<class T>
-PriorityQueue<T>::PriorityQueue() : m_current_size(0), m_capacity(0), m_queue(new PQ_Item<T>* [m_capacity]) {
+PriorityQueue<T>::PriorityQueue() : m_current_size(0), m_capacity(1), m_queue(new PQ_Item<T>* [m_capacity]) {
 }
 template<class T>
-PriorityQueue<T>::PriorityQueue(const PriorityQueue<T>& other) {
-    m_current_size = other.m_current_size;
-    m_capacity = other.m_capacity;
-    m_queue = new PQ_Item<T>*[m_capacity];
+PriorityQueue<T>::PriorityQueue(const PriorityQueue<T>& other) : m_current_size(other.m_current_size), 
+    m_capacity(other.m_capacity), m_queue(new PQ_Item<T>* [other.m_capacity]) {
     for (int i = 0; i < m_current_size; i++) {
         m_queue[i] = other.m_queue[i];
     }
 }
-template<class T>
-PriorityQueue<T>::~PriorityQueue() {}
-
-
 
 template<class T>
-PriorityQueue<T>& PriorityQueue<T>::get() {
-    return this;
+PriorityQueue<T>::~PriorityQueue() {
+    for (int i = 0; i < allocations_counter; i++)
+    {
+        delete m_queue[i];
+    }
+    delete[] m_queue;
 }
 
+//inserts an element to the queue based on its priority, to the currect possion
+//resized the queue if needed.
 template<class T>
 void PriorityQueue<T>::insert(T value, int priority) {
     if (m_current_size == m_capacity) {
@@ -70,12 +65,11 @@ void PriorityQueue<T>::insert(T value, int priority) {
     }
     m_queue[m_current_size] = new PQ_Item<T>(priority, value);
     allocations_counter++;
-    //m_queue[m_current_size]->set_value(value);
-    //m_queue[m_current_size]->set_priority(priority);
     m_current_size++;
     prioritize_elements(m_current_size - 1);
 }
 
+//removes the top element. if the queue is empty throws exception.
 template<class T>
 T PriorityQueue<T>::remove() {
     if (m_current_size == 0) { //is empty
@@ -85,19 +79,16 @@ T PriorityQueue<T>::remove() {
     delete m_queue[0];
     m_current_size--;
     allocations_counter--;
-    //m_queue[0] = m_queue[m_current_size - 1];
     if (m_current_size > 0) {
         for (int i = 0; i < m_current_size; i++)
         {
             m_queue[i] = m_queue[i + 1];
         }
     }
-    //delete m_queue[0];
-    //m_current_size--;
-    //heapifyDown(0);
     return highestPriorityValue;
 }
 
+//returns current number of elements in the queue
 template<class T>
 int PriorityQueue<T>::get_size() const {
     return m_current_size;
@@ -115,14 +106,15 @@ void PriorityQueue<T>::resize() {
     m_queue = newArray;
 }
 
+//swaps between a and b
 template <class T>
 void my_swap(T& a, T& b) {
-    T temp;
-    temp = a;
+    T temp = a;
     a = b;
     b = temp;
 }
 
+//re-arrenges the elements based on their priority in the queue
 template<class T>
 void PriorityQueue<T>::prioritize_elements(int index) {
     int i = index - 1;
@@ -145,13 +137,5 @@ PriorityQueue<T>& PriorityQueue<T>::operator=(const PriorityQueue<T>& other) {
     }
     return *this;
 }
-
-//template<class T>
-//T& PriorityQueue<T>::operator[](int index) {
-//    if (index < m_capacity && index > -1) {
-//        return m_queue[index];
-//    }
-//    throw "invalid index";
-//}
 
 #endif		// _PRIORITY_QUEUE_H_
