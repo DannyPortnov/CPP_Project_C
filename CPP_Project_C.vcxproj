@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Array.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="outOfRange.h" />
     <ClInclude Include="PQ_Item.h" />
     <ClInclude Include="PriorityQueue.h" />
   </ItemGroup>

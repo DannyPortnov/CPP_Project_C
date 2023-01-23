@@ -11,6 +11,15 @@ public:
     string getName() { return name; }
     int getAge() { return age; }
 };
+
+void simple_test() {
+    PriorityQueue<int> intQueue;
+    PriorityQueue<int> intQueue2;
+    intQueue.insert(3, 1);
+    PriorityQueue<int> arrayOfQueues[2] = { intQueue, intQueue2 };
+    //PriorityQueue<int>* arrayOfQueues = 
+}
+
 void resizing_then_removing()
 {
     PriorityQueue<int> intQueue;
@@ -19,6 +28,26 @@ void resizing_then_removing()
     intQueue.insert(1, 3);
     intQueue.insert(1, 0);
     int highestPriority = intQueue.remove(); // returns 1
+}
+
+void removing_then_resizing()
+{
+    PriorityQueue<int> intQueue;
+    intQueue.insert(3, 1);
+    int highestPriority = intQueue.remove(); // returns 1
+    intQueue.insert(5, 2);
+    intQueue.insert(1, 3);
+    intQueue.insert(1, 0);
+    intQueue.insert(1, 2);
+}
+
+void resizing_only()
+{
+    PriorityQueue<int> intQueue;
+    intQueue.insert(3, 1);
+    intQueue.insert(5, 2);
+    intQueue.insert(1, 3);
+    intQueue.insert(1, 0);
 }
 
 void removing_at_max_capacity()
@@ -52,7 +81,10 @@ void removing_at_max_capacity()
 
 int main() {
     resizing_then_removing(); //works
+    removing_then_resizing();//works
     removing_at_max_capacity(); //works
+    resizing_only();//works
+    simple_test();//works
     cout << "Memory Leaks: " << _CrtDumpMemoryLeaks() << endl;
     return 0;
 }

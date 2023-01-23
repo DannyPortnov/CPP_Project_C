@@ -1,7 +1,7 @@
 #ifndef _PRIORITY_QUEUE_H_
 #define _PRIORITY_QUEUE_H_
 
-#define initial_capacity 3
+#define initial_capacity 0
 
 #define   _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
@@ -26,16 +26,11 @@ private:
     //    int m_priority;
     //};
     int m_current_size;
-    int m_max_capacity;
+    int m_capacity;
     PQ_Item<T>** m_queue;
     int allocations_counter = 0;
-    void heapifyUp(int index);
-    void heapifyDown(int index);
+    void prioritize_elements(int index);
     void resize();
-    void quick_sort(PQ_Item<T>* a[], int n);
-
-    int partition(PQ_Item<T>* a[], int n);
-
 public:
     PriorityQueue();
     PriorityQueue(const PriorityQueue<T>& other);
@@ -45,22 +40,17 @@ public:
     int getSize();
     void clear();
     PriorityQueue<T>& operator=(const PriorityQueue<T>& other);
+    //T& operator[](int index);
 };
 
 template<class T>
-PriorityQueue<T>::PriorityQueue() : m_current_size(0), m_max_capacity(initial_capacity), m_queue(new PQ_Item<T>* [m_max_capacity]) {
-    //m_current_size = 0;
-    //m_max_capacity = 10;
-    //m_queue = new PQ_Item<T>*[m_max_capacity];
-    //for (int i = 0; i < m_max_capacity; i++) {
-    //    m_queue[i] = new Queue(m_q_capacity);
-    //}
+PriorityQueue<T>::PriorityQueue() : m_current_size(0), m_capacity(initial_capacity), m_queue(new PQ_Item<T>* [m_capacity]) {
 }
 template<class T>
 PriorityQueue<T>::PriorityQueue(const PriorityQueue<T>& other) {
     m_current_size = other.m_current_size;
-    m_max_capacity = other.m_max_capacity;
-    m_queue = new PQ_Item<T>*[m_max_capacity];
+    m_capacity = other.m_capacity;
+    m_queue = new PQ_Item<T>*[m_capacity];
     for (int i = 0; i < m_current_size; i++) {
         m_queue[i] = other.m_queue[i];
     }
@@ -81,7 +71,7 @@ PriorityQueue<T>::~PriorityQueue() {
 
 template<class T>
 void PriorityQueue<T>::insert(T value, int priority) {
-    if (m_current_size == m_max_capacity) {
+    if (m_current_size == m_capacity) {
         resize();
     }
     m_queue[m_current_size] = new PQ_Item<T>(priority, value);
@@ -89,11 +79,14 @@ void PriorityQueue<T>::insert(T value, int priority) {
     //m_queue[m_current_size]->set_value(value);
     //m_queue[m_current_size]->set_priority(priority);
     m_current_size++;
-    heapifyUp(m_current_size - 1);
+    prioritize_elements(m_current_size - 1);
 }
 
 template<class T>
 T PriorityQueue<T>::remove() {
+    if (m_current_size == 0) { //is empty
+        throw "Cannot remove an element from an empty queue";
+    }
     T highestPriorityValue = m_queue[0]->get_value();
     delete m_queue[0];
     m_current_size--;
@@ -111,6 +104,8 @@ T PriorityQueue<T>::remove() {
     return highestPriorityValue;
 }
 
+
+
 template<class T>
 int PriorityQueue<T>::getSize() {
     return m_current_size;
@@ -124,8 +119,8 @@ void PriorityQueue<T>::clear() {
 template<class T>
 void PriorityQueue<T>::resize() {
     //was_resized = true;
-    m_max_capacity+=1;
-    PQ_Item<T>** newArray = new PQ_Item<T>*[m_max_capacity];
+    m_capacity+=1;
+    PQ_Item<T>** newArray = new PQ_Item<T>*[m_capacity];
     for (int i = 0; i < m_current_size; i++) {
         newArray[i] = m_queue[i];
     }
@@ -142,68 +137,34 @@ void my_swap(T& a, T& b) {
 }
 
 template<class T>
-void PriorityQueue<T>::heapifyUp(int index) {
-    int parentIndex = index - 1;
-    if (index > 0 && m_queue[index]->get_priority() > m_queue[parentIndex]->get_priority()) {
-        my_swap(m_queue[index], m_queue[parentIndex]);
-        heapifyUp(parentIndex);
-    }
-}
-
-template<class T>
-void PriorityQueue<T>::quick_sort(PQ_Item<T>* a[], int n) {
-    if (n <= 1)
-        return;
-    int t = partition(a, n); // rearrange array
-    quick_sort(a, t);
-    quick_sort(a + t + 1, n - t - 1);
-}
-template<class T>
-int PriorityQueue<T>::partition(PQ_Item<T>* a[], int n) {
-    int pivot = a[0]->get_priority();
-    int b = 1, t = n - 1;
-    while (b <= t) {
-        while (b <= t && a[b]->get_priority() < pivot)
-            b++;
-        while (t >= b && a[b]->get_priority() >= pivot)
-            t--;
-        if (b < t) {
-            swap(&a[b++], &a[t--]);
-        }
-    }
-    swap(&a[0], &a[t]);
-    return t;
-}
-
-template<class T>
-void PriorityQueue<T>::heapifyDown(int index) {
-    int leftChildIndex = 2 * index + 1;
-    int rightChildIndex = 2 * index + 2;
-    int smallestIndex = index;
-    if (leftChildIndex < m_current_size && m_queue[leftChildIndex]->get_priority() > m_queue[smallestIndex]->get_priority()) {
-        smallestIndex = leftChildIndex;
-    }
-    if (rightChildIndex < m_current_size && m_queue[rightChildIndex]->get_priority() > m_queue[smallestIndex]->get_priority()) {
-        smallestIndex = rightChildIndex;
-    }
-    if (smallestIndex != index) {
-        my_swap(m_queue[index], m_queue[smallestIndex]);
-        heapifyDown(smallestIndex);
+void PriorityQueue<T>::prioritize_elements(int index) {
+    int i = index - 1;
+    if (index > 0 && m_queue[index]->get_priority() > m_queue[i]->get_priority()) {
+        my_swap(m_queue[index], m_queue[i]);
+        prioritize_elements(i);
     }
 }
 
 template<class T>
 PriorityQueue<T>& PriorityQueue<T>::operator=(const PriorityQueue<T>& other) {
-    //if (this != &other) {
-    //    m_current_size = other.m_current_size;
-    //    m_max_capacity = other.m_max_capacity;
-    //    delete[] m_queue;
-    //    m_queue = new PQ_Item<T>**[m_max_capacity];
-    //    for (int i = 0; i < size; i++) {
-    //        m_queue[i] = other.m_queue[i];
-    //    }
-    //}
+    if (this != &other) {
+        m_current_size = other.m_current_size;
+        m_capacity = other.m_capacity;
+        delete[] m_queue;
+        m_queue = new PQ_Item<T>**[m_capacity];
+        for (int i = 0; i < m_current_size; i++) {
+            m_queue[i] = other.m_queue[i];
+        }
+    }
     return *this;
 }
+
+//template<class T>
+//T& PriorityQueue<T>::operator[](int index) {
+//    if (index < m_capacity && index > -1) {
+//        return m_queue[index];
+//    }
+//    throw "invalid index";
+//}
 
 #endif		// _PRIORITY_QUEUE_H_
